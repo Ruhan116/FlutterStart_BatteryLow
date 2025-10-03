@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
-import 'package:google_fonts/google_fonts.dart';
-
-
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 void main() {
   runApp(const MyApp());
@@ -11,228 +9,203 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Student ID Card Form',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const StudentIDFormPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+class StudentIDFormPage extends StatefulWidget {
+  const StudentIDFormPage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<StudentIDFormPage> createState() => _StudentIDFormPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  List<Color> backgroundColors = [
-    const Color(0xFF001F4D),
-    const Color(0xFF001F4D),
-    Colors.white,
-    Colors.white,
-    const Color(0xFF001F4D),
-    const Color(0xFF001F4D),
-  ];
+class _StudentIDFormPageState extends State<StudentIDFormPage> {
+  final TextEditingController _idController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _programController = TextEditingController();
+  final TextEditingController _departmentController = TextEditingController();
+  final TextEditingController _countryController = TextEditingController();
 
-  final List<TextStyle Function({Color? color, double? fontSize, FontWeight? fontWeight})> fonts = [
-    GoogleFonts.roboto,
-    GoogleFonts.lato,
-    GoogleFonts.oswald,
-    GoogleFonts.poppins,
-    GoogleFonts.montserrat,
-  ];
+  String? studentId;
+  String? studentName;
+  String? program;
+  String? department;
+  String? country;
+  String? _selectedImagePath;
+  
+  bool _showCard = false;
+  final ImagePicker _picker = ImagePicker();
 
+  @override
+  void dispose() {
+    _idController.dispose();
+    _nameController.dispose();
+    _programController.dispose();
+    _departmentController.dispose();
+    _countryController.dispose();
+    super.dispose();
+  }
 
-  final _random = Random();
-  TextStyle currentFont = GoogleFonts.roboto(fontSize: 20);
-
-
-  void _incrementCounter() {
+  void _toggleView() {
     setState(() {
-      // Generate 3 random colors
-      List<Color> threeColors = List.generate(
-        3,
-        (_) => Color.fromARGB(
-          255,
-          _random.nextInt(256),
-          _random.nextInt(256),
-          _random.nextInt(256),
-        ),
-      );
-
-      // Repeat each color twice to get 6 elements
-      backgroundColors = [
-        threeColors[0],
-        threeColors[0],
-        threeColors[1],
-        threeColors[1],
-        threeColors[2],
-        threeColors[2],
-      ];
-
-      final fontFunction = fonts[_random.nextInt(fonts.length)];
-      // Inverse color of threeColors[1]
-      Color inverseColor = Color.fromARGB(
-        255,
-        255 - threeColors[1].red,
-        255 - threeColors[1].green,
-        255 - threeColors[1].blue,
-      );
-      currentFont = fontFunction(fontSize: 20, color: inverseColor, fontWeight: FontWeight.bold);
+      if (!_showCard) {
+        // Generate card
+        studentId = _idController.text.trim();
+        studentName = _nameController.text.trim();
+        program = _programController.text.trim();
+        department = _departmentController.text.trim();
+        country = _countryController.text.trim();
+        _showCard = true;
+      } else {
+        // Edit mode
+        _showCard = false;
+      }
     });
   }
 
+  Future<void> _pickImage() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        _selectedImagePath = image.path;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: const Text('Student ID Card Form'),
       ),
-      backgroundColor: Colors.grey[900],
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                elevation: 4,
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: backgroundColors,
-                        stops: [0.0, 0.35, 0.35, 0.96, 0.96, 1.0],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              if (!_showCard) ...[
+                // Image picker section
+                GestureDetector(
+                  onTap: _pickImage,
+                  child: Container(
+                    width: 150,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      // spacing: 16, // Remove spacing property, not valid for Column
-                      children: [
-                        SizedBox(
-                          width: 40,
-                          height: 40,
-                          child: Image(image: AssetImage('assets/images/IUT.png'), fit: BoxFit.contain),
-                        ),
-                        const Text(
-                          'Islamic University of Technology',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
+                    child: _selectedImagePath != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              _selectedImagePath!,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        : const Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.add_a_photo, size: 40, color: Colors.grey),
+                              SizedBox(height: 8),
+                              Text("Tap to select photo", style: TextStyle(color: Colors.grey)),
+                            ],
                           ),
-                        ),
-                        SizedBox(height: 10), // Add spacing between sections
-                        DefaultTextStyle(
-                          style: currentFont,
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 25.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start, // left-aligns all children
-                              children: [
-                                SizedBox(
-                                  width: 120,
-                                  height: 120,
-                                  child: Image(image: AssetImage('assets/images/id_image.jpg'), fit: BoxFit.cover),
-                                ),
-                                SizedBox(height: 10), // space between image and text
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.vpn_key,
-                                      size: 16
-                                    ),
-                                    const SizedBox(width: 6), // small space
-                                    const Text('Student ID'),
-                                  ],
-                                ),
-                                Card(
-                                  color: Colors.blue[200],
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: const Text("210041116"),
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.person,
-                                      size: 16
-                                    ),
-                                    const SizedBox(width: 6), // small space
-                                    const Text('Student Name'),
-                                  ],
-                                ),
-                                Text("      Shigaraki Tomura"),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.school,
-                                      size: 16
-                                    ),
-                                    const SizedBox(width: 6), // small space
-                                    const Text('Program: Bsc in CSE'),
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.computer,
-                                      size: 16
-                                    ),
-                                    const SizedBox(width: 6), // small space
-                                    const Text('Department CSE'),
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.gps_fixed,
-                                      size: 16
-                                    ),
-                                    const SizedBox(width: 6), // small space
-                                    const Text('Bangladesh'),
-                                  ],
-                                ),
-                                SizedBox(height: 10), // Add spacing between sections
-                              ]
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _idController,
+                  decoration: const InputDecoration(
+                    labelText: "Student ID",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(
+                    labelText: "Student Name",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _programController,
+                  decoration: const InputDecoration(
+                    labelText: "Program",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _departmentController,
+                  decoration: const InputDecoration(
+                    labelText: "Department",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _countryController,
+                  decoration: const InputDecoration(
+                    labelText: "Country",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ] else ...[
+                Card(
+                  color: Colors.white,
+                  elevation: 4,
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (_selectedImagePath != null) ...[
+                          Center(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.network(
+                                _selectedImagePath!,
+                                width: 120,
+                                height: 120,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
-                        )
+                          const SizedBox(height: 16),
+                        ],
+                        Text("Student ID: $studentId", style: const TextStyle(fontSize: 18)),
+                        const SizedBox(height: 8),
+                        Text("Student Name: $studentName", style: const TextStyle(fontSize: 18)),
+                        const SizedBox(height: 8),
+                        Text("Program: $program", style: const TextStyle(fontSize: 18)),
+                        const SizedBox(height: 8),
+                        Text("Department: $department", style: const TextStyle(fontSize: 18)),
+                        const SizedBox(height: 8),
+                        Text("Country: $country", style: const TextStyle(fontSize: 18)),
                       ],
                     ),
                   ),
                 ),
-            ),
-          ],
+              ],
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _toggleView,
+                child: Text(_showCard ? "Edit" : "Generate"),
+              ),
+            ],
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }
