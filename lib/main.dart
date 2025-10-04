@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
-import 'package:google_fonts/google_fonts.dart';
-
-
 
 void main() {
   runApp(const MyApp());
@@ -43,18 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
     const Color(0xFF001F4D),
   ];
 
-  final List<TextStyle Function({Color? color, double? fontSize, FontWeight? fontWeight})> fonts = [
-    GoogleFonts.roboto,
-    GoogleFonts.lato,
-    GoogleFonts.oswald,
-    GoogleFonts.poppins,
-    GoogleFonts.montserrat,
-  ];
-
-
   final _random = Random();
-  TextStyle currentFont = GoogleFonts.roboto(fontSize: 20);
-
 
   void _incrementCounter() {
     setState(() {
@@ -78,16 +64,6 @@ class _MyHomePageState extends State<MyHomePage> {
         threeColors[2],
         threeColors[2],
       ];
-
-      final fontFunction = fonts[_random.nextInt(fonts.length)];
-      // Inverse color of threeColors[1]
-      Color inverseColor = Color.fromARGB(
-        255,
-        255 - threeColors[1].red,
-        255 - threeColors[1].green,
-        255 - threeColors[1].blue,
-      );
-      currentFont = fontFunction(fontSize: 20, color: inverseColor, fontWeight: FontWeight.bold);
     });
   }
 
@@ -122,7 +98,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
-                      // spacing: 16, // Remove spacing property, not valid for Column
                       children: [
                         SizedBox(
                           width: 40,
@@ -136,89 +111,86 @@ class _MyHomePageState extends State<MyHomePage> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 10), // Add spacing between sections
-                        DefaultTextStyle(
-                          style: currentFont,
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 25.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start, // left-aligns all children
-                              children: [
-                                SizedBox(
-                                  width: 120,
-                                  height: 120,
-                                  child: Image(image: AssetImage('assets/images/id_image.jpg'), fit: BoxFit.cover),
-                                ),
-                                SizedBox(height: 10), // space between image and text
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.vpn_key,
-                                      size: 16
-                                    ),
-                                    const SizedBox(width: 6), // small space
-                                    const Text('Student ID'),
-                                  ],
-                                ),
-                                Card(
-                                  color: Colors.blue[200],
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
+                        SizedBox(height: 10),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 25.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                width: 120,
+                                height: 120,
+                                child: Image(image: AssetImage('assets/images/id_image.jpg'), fit: BoxFit.cover),
+                              ),
+                              SizedBox(height: 10),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.vpn_key,
+                                    size: 16
                                   ),
-                                  child: Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: const Text("210041116"),
+                                  const SizedBox(width: 6),
+                                  const Text('Student ID'),
+                                ],
+                              ),
+                              Card(
+                                color: Colors.blue[200],
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: const Text("210041116"),
+                                ),
+                              ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.person,
+                                    size: 16
                                   ),
-                                ),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.person,
-                                      size: 16
-                                    ),
-                                    const SizedBox(width: 6), // small space
-                                    const Text('Student Name'),
-                                  ],
-                                ),
-                                Text("      Shigaraki Tomura"),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.school,
-                                      size: 16
-                                    ),
-                                    const SizedBox(width: 6), // small space
-                                    const Text('Program: Bsc in CSE'),
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.computer,
-                                      size: 16
-                                    ),
-                                    const SizedBox(width: 6), // small space
-                                    const Text('Department CSE'),
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.gps_fixed,
-                                      size: 16
-                                    ),
-                                    const SizedBox(width: 6), // small space
-                                    const Text('Bangladesh'),
-                                  ],
-                                ),
-                                SizedBox(height: 10), // Add spacing between sections
-                              ]
-                            ),
+                                  const SizedBox(width: 6),
+                                  const Text('Student Name'),
+                                ],
+                              ),
+                              Text("      Shigaraki Tomura"),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.school,
+                                    size: 16
+                                  ),
+                                  const SizedBox(width: 6),
+                                  const Text('Program: Bsc in CSE'),
+                                ],
+                              ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.computer,
+                                    size: 16
+                                  ),
+                                  const SizedBox(width: 6),
+                                  const Text('Department CSE'),
+                                ],
+                              ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.gps_fixed,
+                                    size: 16
+                                  ),
+                                  const SizedBox(width: 6),
+                                  const Text('Bangladesh'),
+                                ],
+                              ),
+                              SizedBox(height: 10),
+                            ]
                           ),
                         )
                       ],
